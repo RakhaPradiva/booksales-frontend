@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAuthors } from "../../../_services/authors";
+import { getAuthors, deleteAuthor } from "../../../_services/authors";
 import { Link } from "react-router-dom";
 
 const AdminAuthors = () => {
@@ -16,6 +16,22 @@ const AdminAuthors = () => {
 
   const toggleDropdown = (id) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const confirmDelete = window.confirm(
+        "Apakah anda ingin menghapus author ini?",
+      );
+
+      if (confirmDelete) {
+        await deleteAuthor(id);
+        setAuthors(authors.filter((author) => author.id !== id));
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error deleting author");
+    }
   };
 
   return (
@@ -152,6 +168,7 @@ const AdminAuthors = () => {
                               <li>
                                 <button
                                   type="button"
+                                  onClick={() => handleDelete(author.id)}
                                   className="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                 >
                                   Delete
@@ -167,7 +184,7 @@ const AdminAuthors = () => {
               ) : (
                 <tr>
                   <td
-                    colSpan={3}
+                    colSpan={4}
                     className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
                   >
                     No authors found

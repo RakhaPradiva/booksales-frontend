@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getGenres } from "../../../_services/genres";
+import { getGenres, deleteGenre } from "../../../_services/genres";
 import { Link } from "react-router-dom";
 
 export const AdminGenres = () => {
@@ -16,6 +16,22 @@ export const AdminGenres = () => {
 
   const toggleDropdown = (id) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const confirmDelete = window.confirm(
+        "Apakah anda ingin menghapus genre ini?",
+      );
+
+      if (confirmDelete) {
+        await deleteGenre(id);
+        setGenres(genres.filter((genre) => genre.id !== id));
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error deleting genre");
+    }
   };
 
   return (
@@ -144,6 +160,7 @@ export const AdminGenres = () => {
                               <li>
                                 <button
                                   type="button"
+                                  onClick={() => handleDelete(genre.id)}
                                   className="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                 >
                                   Delete

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getBooks } from "../../../_services/books";
+import { getBooks, deleteBook } from "../../../_services/books";
 import { getGenres } from "../../../_services/genres";
 import { getAuthors } from "../../../_services/authors";
 
@@ -36,6 +36,23 @@ export default function AdminBooks() {
 
   const toggleDropdown = (id) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const confirmDelete = window.confirm(
+        "Apakah anda ingin meghapus buku ini?",
+      );
+
+      if (confirmDelete) {
+        await deleteBook(id);
+        setBooks(books.filter((book) => book.id !== id));
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error deleting book");
+      throw error;
+    }
   };
 
   return (
@@ -180,6 +197,7 @@ export default function AdminBooks() {
                               <li>
                                 <button
                                   type="button"
+                                  onClick={() => handleDelete(book.id)}
                                   className="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                 >
                                   Delete

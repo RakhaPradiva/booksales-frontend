@@ -1,7 +1,9 @@
 import axios from "axios";
 
-const API = axios.create({
-  baseURL: "http://localhost:8000/api",
+const url = "http://localhost:8000";
+
+export const API = axios.create({
+  baseURL: `${url}/api`,
 });
 
-export default API;
+export const IMAGE_STORAGE = `${url}/storage`;
