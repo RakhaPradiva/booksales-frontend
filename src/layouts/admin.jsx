@@ -1,6 +1,32 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { logout, useDecodeToken } from "../_services/auth";
+import { useEffect } from "react";
 
 export default function AdminLayout() {
+  const token = localStorage.getItem("access-token");
+  const userInfo = JSON.parse(localStorage.getItem("user-info"));
+  const decodedData = useDecodeToken(token);
+  const navigate = useNavigate();
+  token;
+
+  useEffect(() => {
+    if (!token || !decodedData || !decodedData.success) {
+      navigate("/login");
+    }
+    const role = userInfo.role;
+    if (role !== "admin" || !role) {
+      navigate("/");
+    }
+  }, [token, decodedData, navigate, userInfo]);
+
+  const handleLogout = async () => {
+    if (token) {
+      await logout(token);
+      localStorage.removeItem("user-info");
+    }
+    navigate("/login");
+  };
+
   return (
     <>
       <div className="antialiased bg-gray-50 dark:bg-gray-900">
@@ -75,6 +101,12 @@ export default function AdminLayout() {
                 </svg>
               </button>
 
+              <Link
+                to="/admin"
+                className="text-white text-sm bg-gray-700 hover:bg-gray-400 focus:ring-4 font-medium rounded-lg px-4 lg:px-5 py-2 lg:py-2.5 mr-2  focus:outline-none"
+              >
+                {userInfo.name}
+              </Link>
               <button
                 type="button"
                 className="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
@@ -279,6 +311,15 @@ export default function AdminLayout() {
                   </svg>
                   <span className="ml-3">Help</span>
                 </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center cursor-pointer p-2 text-base font-medium text-red-700 rounded-lg transition duration-75 hover:text-red-400 group"
+                >
+                  <span className="ml-3">Logout</span>
+                </button>
               </li>
             </ul>
           </div>
